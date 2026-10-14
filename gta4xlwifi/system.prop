@@ -1,0 +1,2 @@
+sys.usb.controller=13200000.dwc3
+ro.radio.noril=true

@@ -16,6 +16,7 @@
 
 PRODUCT_MAKEFILES := \
     $(LOCAL_DIR)/twrp_gta4xl.mk \
+    $(LOCAL_DIR)/twrp_gta4xlwifi.mk \
     $(LOCAL_DIR)/twrp_m21.mk \
     $(LOCAL_DIR)/twrp_m31.mk \
     $(LOCAL_DIR)/twrp_m31s.mk \
@@ -23,6 +24,7 @@ PRODUCT_MAKEFILES := \
 
 COMMON_LUNCH_CHOICES := \
     twrp_gta4xl-eng \
+    twrp_gta4xlwifi-eng \
     twrp_m21-eng \
     twrp_m31-eng \
     twrp_m31s-eng \

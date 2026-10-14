@@ -1,6 +1,7 @@
 ## TWRP device tree for the Samsung Exynos 9611 devices
 Current targets:
 - gta4xl
+- gta4xlwifi
 - m21
 - m31
 - m31s
