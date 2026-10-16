@@ -63,7 +63,14 @@ jobs:
           set +u
           source build/envsetup.sh
           lunch twrp_${DEVICE}-eng
-          mka -j"$(nproc)" recoveryimage
+          mka -j"$(nproc)" recoveryimage 2>&1 | tee "$GITHUB_WORKSPACE/build.log"
+          exit "${PIPESTATUS[0]}"
+
+      - name: Show build errors
+        if: failure()
+        run: |
+          grep -nE "error:|FAILED:|ninja: |No such file|too large|missing|\*\*\*" "$GITHUB_WORKSPACE/build.log" | head -20 | while IFS= read -r l; do echo "::error::${l:0:400}"; done
+          tail -30 "$GITHUB_WORKSPACE/build.log" | while IFS= read -r l; do echo "::warning::${l:0:400}"; done
 
       - name: Package (Odin tar.md5)
         run: |
@@ -80,3 +87,11 @@ jobs:
         with:
           name: TWRP_${{ inputs.device }}
           path: artifacts/*
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-${{ inputs.device }}
+          path: build.log
+          if-no-files-found: ignore
