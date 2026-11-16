@@ -42,7 +42,7 @@
 /odm             erofs   odm                                     flags=display="ODM";logical;backup=1;fsflags="ro"
 
 # --- Data / metadata ---
-/data            f2fs    /dev/block/by-name/userdata             flags=display="Data";fsflags="noatime,nosuid,nodev,discard,usrquota,grpquota,fsync_mode=nobarrier,reserve_root=32768,resgid=5678"
+/data            f2fs    /dev/block/platform/13520000.ufs/by-name/userdata
 /metadata        ext4    /dev/block/by-name/metadata             flags=display="Metadata";
 /cache           ext4    /dev/block/by-name/cache                flags=display="Cache";
 
