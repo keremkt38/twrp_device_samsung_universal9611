@@ -25,20 +25,45 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#<src>                          <mnt_point>    <type>       <mnt_flags and options>           <fs_mgr_flags>
-system                          /system         ext4        ro,barrier=1,discard              logical,first_stage_mount
-system                          /system         erofs       ro,barrier=1,discard              logical,first_stage_mount
-system_ext                      /system_ext     ext4        ro,barrier=1,discard              logical,first_stage_mount
-system_ext                      /system_ext     erofs       ro,barrier=1,discard              logical,first_stage_mount
-vendor                          /vendor         ext4        ro,barrier=1,discard              logical,first_stage_mount
-vendor                          /vendor         erofs       ro,barrier=1,discard              logical,first_stage_mount
-product                         /product        ext4        ro,barrier=1,discard              logical,first_stage_mount
-product                         /product        erofs       ro,barrier=1,discard              logical,first_stage_mount
-odm                             /odm            ext4        ro,barrier=1,discard              logical,first_stage_mount
-odm                             /odm            erofs       ro,barrier=1,discard              logical,first_stage_mount
+# Unified TWRP fstab (replaces the old recovery.fstab + twrp.flags pair)
+#
+# <mnt_point>    <type>  <src>                                   <flags / options>
 
-/dev/block/by-name/metadata     /metadata       ext4        defaults                          wait,first_stage_mount
-/dev/block/by-name/userdata     /data           f2fs        noatime,nosuid,nodev,discard,usrquota,grpquota,fsync_mode=nobarrier,reserve_root=32768,resgid=5678    recoveryonly,length=-20480
+# --- Dynamic partitions (super) ---
+/system          ext4    system                                  flags=display="System";logical;backup=1;fsflags="ro,barrier=1,discard"
+/system          erofs   system                                  flags=display="System";logical;backup=1;fsflags="ro"
+/system_ext      ext4    system_ext                              flags=display="System Ext";logical;backup=1;fsflags="ro,barrier=1,discard"
+/system_ext      erofs   system_ext                              flags=display="System Ext";logical;backup=1;fsflags="ro"
+/vendor          ext4    vendor                                  flags=display="Vendor";logical;backup=1;fsflags="ro,barrier=1,discard"
+/vendor          erofs   vendor                                  flags=display="Vendor";logical;backup=1;fsflags="ro"
+/product         ext4    product                                 flags=display="Product";logical;backup=1;fsflags="ro,barrier=1,discard"
+/product         erofs   product                                 flags=display="Product";logical;backup=1;fsflags="ro"
+/odm             ext4    odm                                     flags=display="ODM";logical;backup=1;fsflags="ro,barrier=1,discard"
+/odm             erofs   odm                                     flags=display="ODM";logical;backup=1;fsflags="ro"
 
-# Add misc for GOTA
-/dev/block/by-name/misc         /misc           emmc        defaults                          recoveryonly
+# --- Data / metadata ---
+/data            f2fs    /dev/block/by-name/userdata             flags=fsflags="noatime,nosuid,nodev,discard,usrquota,grpquota,fsync_mode=nobarrier,reserve_root=32768,resgid=5678";length=-20480
+/metadata        ext4    /dev/block/by-name/metadata             flags=display="Metadata";
+/cache           ext4    /dev/block/by-name/cache                flags=display="Cache";
+
+# --- Boot images ---
+/boot            emmc    /dev/block/by-name/boot                 flags=display="Boot";backup=1;flashimg=1;
+/recovery        emmc    /dev/block/by-name/recovery             flags=display="Recovery";backup=1;flashimg=1;
+/dtbo            emmc    /dev/block/by-name/dtbo                 flags=display="DTBO Image";backup=1;flashimg=1;
+/vbmeta_system   emmc    /dev/block/by-name/vbmeta               flags=display="Vbmeta System";backup=1;flashimg=1;
+/vbmeta_samsung  emmc    /dev/block/by-name/vbmeta_samsung       flags=display="Vbmeta Samsung";backup=1;flashimg=1;
+/up_param        emmc    /dev/block/by-name/up_param             flags=display="Param";backup=1;flashimg=1;
+/misc            emmc    /dev/block/by-name/misc                 flags=display="Misc";
+
+# --- Samsung partitions ---
+/efs             ext4    /dev/block/by-name/efs                  flags=display="Efs";backup=1;
+/sec_efs         ext4    /dev/block/by-name/sec_efs              flags=display="Sec Efs";backup=1;
+/prism           ext4    /dev/block/by-name/prism                flags=display="Prism";backup=0;
+/prism_image     emmc    /dev/block/by-name/prism                flags=display="Prism Image";backup=1;flashimg=1;
+/optics          ext4    /dev/block/by-name/optics               flags=display="Optics";backup=0;
+/optics_image    emmc    /dev/block/by-name/optics               flags=display="Optics Image";backup=1;flashimg=1;
+/omr             ext4    /dev/block/by-name/omr                  flags=display="Logs (OMR)";backup=1;
+
+# --- External storage ---
+/external_sd     vfat    /dev/block/mmcblk0p1 /dev/block/mmcblk0 flags=display="External SDCard";storage;wipeingui;removable;
+/usb-otg         vfat    /dev/block/sdf1 /dev/block/sdf          flags=display="USB OTG";storage;wipeingui;removable;
